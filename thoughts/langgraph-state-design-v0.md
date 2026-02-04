@@ -1,5 +1,55 @@
 # LangGraph Drive-Thru Bot: State Design
 
+> **Related Documents:**
+> - [Langfuse Prompt Management](./langfuse-prompt-management-v0.md) – Prompt versioning, testing, and deployment strategies
+> - [Langfuse Evaluation](./langfuse-evaluation-v0.md) – Systematic evaluation of application behavior
+> - [Workflow Thoughts](./workflow-thoughts.md) – High-level ordering workflow requirements
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Workflow Requirements](#workflow-requirements)
+  - [Core Responsibilities](#core-responsibilities)
+  - [Validation Rules](#validation-rules)
+  - [Edge Cases](#edge-cases)
+- [LangGraph State Schema](#langgraph-state-schema)
+- [Pydantic Models for Structured Outputs](#pydantic-models-for-structured-outputs)
+  - [Intent Classification](#intent-classification)
+  - [Parsed Item Request](#parsed-item-request)
+  - [Validation Result](#validation-result)
+  - [Customer Response](#customer-response)
+  - [Combined Parse Result](#combined-parse-result)
+- [Node Implementations](#node-implementations)
+  - [Using Structured Outputs in Nodes](#using-structured-outputs-in-nodes)
+- [Routing with Structured Outputs](#routing-with-structured-outputs)
+- [Graph Architectures](#graph-architectures)
+  - [Approach 1: Simple Linear with Conditional Loop](#approach-1-simple-linear-with-conditional-loop)
+  - [Approach 2: Explicit State Machine (Recommended)](#approach-2-explicit-state-machine-recommended)
+  - [Approach 3: Subgraph Pattern with Validation Subgraph](#approach-3-subgraph-pattern-with-validation-subgraph)
+- [Tradeoff Summary](#tradeoff-summary)
+- [Recommended Approach](#recommended-approach)
+- [Implementation Best Practices](#implementation-best-practices)
+  - [Structured Output Guidelines](#structured-output-guidelines)
+  - [Persistence](#persistence)
+  - [Streaming](#streaming)
+  - [Error Recovery](#error-recovery)
+  - [Voice Integration Points](#voice-integration-points)
+- [Langfuse Integration for Observability](#langfuse-integration-for-observability)
+  - [Why Langfuse?](#why-langfuse)
+  - [Setup](#setup)
+  - [Basic Integration](#basic-integration)
+  - [Adding Context to Traces](#adding-context-to-traces)
+  - [Adding Scores for Evaluation](#adding-scores-for-evaluation)
+  - [Prompt Management](#prompt-management)
+  - [Multi-Agent Tracing](#multi-agent-tracing)
+  - [What You'll See in Langfuse](#what-youll-see-in-langfuse)
+  - [Best Practices](#best-practices)
+- [Next Steps](#next-steps)
+
+---
+
 ## Overview
 
 This document defines LangGraph state design patterns for a McDonald's breakfast drive-thru voice ordering system. The system uses Pydantic v2 models (`Item`, `Modifier`, `Order`, `Menu`) as structured inputs/outputs between workflow nodes and LLM calls.
@@ -719,6 +769,8 @@ langfuse.create_score(
 ---
 
 ### Prompt Management
+
+> **See also:** [Langfuse Prompt Management](./langfuse-prompt-management-v0.md) for detailed coverage of prompt versioning, testing workflows, deployment strategies, and best practices.
 
 Manage and version prompts in Langfuse, then use in LangGraph nodes:
 
