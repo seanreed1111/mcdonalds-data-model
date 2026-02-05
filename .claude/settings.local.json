@@ -21,7 +21,10 @@
       "WebFetch(domain:docs.llamaindex.ai)",
       "mcp__langfuse-docs__searchLangfuseDocs",
       "Bash(xmllint:*)",
-      "mcp__langfuse-docs__getLangfuseDocsPage"
+      "mcp__langfuse-docs__getLangfuseDocsPage",
+      "Bash(uv sync:*)",
+      "Bash(make:*)",
+      "Bash(uv pip install:*)"
     ]
   }
 }
