@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns="http://mcdonalds.com/menu/breakfast/v2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://mcdonalds.com/menu/breakfast/v2 breakfast-v2.xsd">
+
+  <metadata>
+    <menu_id>mcd-breakfast-menu</menu_id>
+    <menu_name>McDonald's Breakfast Menu</menu_name>
+    <menu_version>v2</menu_version>
+    <location>
+      <id>mcd-main-location</id>
+      <name>McDonald's Main Location</name>
+      <address>123 Main St, Anytown, USA</address>
+      <city>Anytown</city>
+      <state>CA</state>
+      <zip>12345</zip>
+      <country>USA</country>
+    </location>
+  </metadata>
+
+  <items>
+    <item>
+      <item_id>bacon</item_id>
+      <name>Bacon</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>big-breakfast</item_id>
+      <name>Big Breakfast</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers>
+        <modifier>
+          <modifier_id>egg-whites</modifier_id>
+          <name>Egg Whites</name>
+        </modifier>
+        <modifier>
+          <modifier_id>hotcakes</modifier_id>
+          <name>Hotcakes</name>
+        </modifier>
+      </available_modifiers>
+    </item>
+
+    <item>
+      <item_id>big-breakfast-large</item_id>
+      <name>Big Breakfast</name>
+      <category_name>breakfast</category_name>
+      <size>large</size>
+      <default_size>large</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers>
+        <modifier>
+          <modifier_id>egg-whites</modifier_id>
+          <name>Egg Whites</name>
+        </modifier>
+        <modifier>
+          <modifier_id>hotcakes</modifier_id>
+          <name>Hotcakes</name>
+        </modifier>
+      </available_modifiers>
+    </item>
+
+    <item>
+      <item_id>cinnamon-melts</item_id>
+      <name>Cinnamon Melts</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>egg-mcmuffin</item_id>
+      <name>Egg McMuffin</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>egg-white-delight</item_id>
+      <name>Egg White Delight</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>fruit-maple-oatmeal</item_id>
+      <name>Fruit &amp; Maple Oatmeal</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>hash-brown</item_id>
+      <name>Hash Brown</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>hotcakes</item_id>
+      <name>Hotcakes</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers>
+        <modifier>
+          <modifier_id>sausage</modifier_id>
+          <name>Sausage</name>
+        </modifier>
+      </available_modifiers>
+    </item>
+
+    <item>
+      <item_id>sausage</item_id>
+      <name>Sausage</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>sausage-biscuit</item_id>
+      <name>Sausage Biscuit</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers>
+        <modifier>
+          <modifier_id>egg</modifier_id>
+          <name>Egg</name>
+        </modifier>
+        <modifier>
+          <modifier_id>egg-whites</modifier_id>
+          <name>Egg Whites</name>
+        </modifier>
+      </available_modifiers>
+    </item>
+
+    <item>
+      <item_id>sausage-biscuit-large</item_id>
+      <name>Sausage Biscuit</name>
+      <category_name>breakfast</category_name>
+      <size>large</size>
+      <default_size>large</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers>
+        <modifier>
+          <modifier_id>egg</modifier_id>
+          <name>Egg</name>
+        </modifier>
+        <modifier>
+          <modifier_id>egg-whites</modifier_id>
+          <name>Egg Whites</name>
+        </modifier>
+      </available_modifiers>
+    </item>
+
+    <item>
+      <item_id>sausage-burrito</item_id>
+      <name>Sausage Burrito</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>sausage-mcgriddles</item_id>
+      <name>Sausage McGriddles</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>sausage-mcmuffin</item_id>
+      <name>Sausage McMuffin</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers>
+        <modifier>
+          <modifier_id>egg</modifier_id>
+          <name>Egg</name>
+        </modifier>
+        <modifier>
+          <modifier_id>egg-whites</modifier_id>
+          <name>Egg Whites</name>
+        </modifier>
+      </available_modifiers>
+    </item>
+
+    <item>
+      <item_id>southern-style-chicken-biscuit</item_id>
+      <name>Southern Style Chicken Biscuit</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>southern-style-chicken-biscuit-large</item_id>
+      <name>Southern Style Chicken Biscuit</name>
+      <category_name>breakfast</category_name>
+      <size>large</size>
+      <default_size>large</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>steak</item_id>
+      <name>Steak</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>steak-egg-biscuit</item_id>
+      <name>Steak &amp; Egg Biscuit</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>steak-egg-biscuit-large</item_id>
+      <name>Steak &amp; Egg Biscuit</name>
+      <category_name>breakfast</category_name>
+      <size>large</size>
+      <default_size>large</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+
+    <item>
+      <item_id>steak-egg-mcmuffin</item_id>
+      <name>Steak &amp; Egg McMuffin</name>
+      <category_name>breakfast</category_name>
+      <size>regular</size>
+      <default_size>regular</default_size>
+      <quantity>1</quantity>
+      <modifiers/>
+      <available_modifiers/>
+    </item>
+  </items>
+
+</menu>
