@@ -1,6 +1,6 @@
 # v0-stage-1: Simple Chatbot Implementation Plan
 
-> **Status:** AWAITING MANUAL VERIFICATION (see plan/HANDOFF-v0-stage-1.md)
+> **Status:** COMPLETED
 
 ## Table of Contents
 
@@ -644,9 +644,9 @@ Before starting, read these files:
 - [x] `uv run langgraph dev` starts without errors
 
 #### Manual Verification:
-- [ ] LangGraph Studio UI loads at http://localhost:2024
-- [ ] Can send messages and receive responses in Studio
-- [ ] Traces appear in Langfuse (Studio uses same callback config)
+- [x] LangGraph Studio UI loads at http://localhost:2024
+- [x] Can send messages and receive responses in Studio
+- [x] Traces appear in Langfuse
 
 ---
 
@@ -661,7 +661,7 @@ make test-smoke
 This verifies imports work and Langfuse authentication passes.
 
 **Manual verification:**
-1. Run `make chat` and have a multi-turn conversation
+1. Run `make chat` and have a multi-turn conversation (done via graph+while loop, not a new graph)
 2. Verify traces in Langfuse dashboard (check session_id grouping)
 3. Run `make dev` and test via LangGraph Studio
 
