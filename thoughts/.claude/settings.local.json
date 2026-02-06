@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where:*)",
+      "Bash(choco install:*)",
+      "Bash(cmd.exe //c \"where choco\")",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files \\(x86\\)/GnuWin32/bin\")",
+      "Bash(make:*)",
+      "WebSearch",
+      "Bash(winget uninstall:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(/c/ProgramData/chocolatey/bin/choco.exe install:*)",
+      "Bash(/c/ProgramData/chocolatey/bin/make.exe:*)"
+    ]
+  }
+}

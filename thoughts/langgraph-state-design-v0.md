@@ -1,5 +1,9 @@
 # LangGraph Drive-Thru Bot: State Design
 
+> **v0 Scope:** Customers can only **add items** to their order. Remove and modify functionality will be added in future versions.
+
+> **v0 Interface:** Chatbot (text-only). No Speech-to-Text (STT) or Text-to-Speech (TTS) in v0. The design is structured to easily integrate STT/TTS in future versions.
+
 > **Related Documents:**
 > - [Langfuse Prompt Management](./langfuse-prompt-management-v0.md) – Prompt versioning, testing, and deployment strategies
 > - [Langfuse Evaluation](./langfuse-evaluation-v0.md) – Systematic evaluation of application behavior
@@ -25,17 +29,17 @@
   - [Using Structured Outputs in Nodes](#using-structured-outputs-in-nodes)
 - [Routing with Structured Outputs](#routing-with-structured-outputs)
 - [Graph Architectures](#graph-architectures)
-  - [Approach 1: Simple Linear with Conditional Loop](#approach-1-simple-linear-with-conditional-loop)
-  - [Approach 2: Explicit State Machine (Recommended)](#approach-2-explicit-state-machine-recommended)
-  - [Approach 3: Subgraph Pattern with Validation Subgraph](#approach-3-subgraph-pattern-with-validation-subgraph)
+  - [Approach 1: Simple Linear with Conditional Loop (Deprecated)](#approach-1-simple-linear-with-conditional-loop-deprecated)
+  - [Approach 2: Explicit State Machine (v0 Implementation)](#approach-2-explicit-state-machine-v0-implementation)
+  - [Approach 3: Subgraph Pattern with Validation Subgraph (Future Consideration)](#approach-3-subgraph-pattern-with-validation-subgraph-future-consideration)
 - [Tradeoff Summary](#tradeoff-summary)
-- [Recommended Approach](#recommended-approach)
+- [v0 Implementation Decision](#v0-implementation-decision)
 - [Implementation Best Practices](#implementation-best-practices)
   - [Structured Output Guidelines](#structured-output-guidelines)
   - [Persistence](#persistence)
   - [Streaming](#streaming)
   - [Error Recovery](#error-recovery)
-  - [Voice Integration Points](#voice-integration-points)
+  - [Interface Integration Points](#interface-integration-points)
 - [Langfuse Integration for Observability](#langfuse-integration-for-observability)
   - [Why Langfuse?](#why-langfuse)
   - [Setup](#setup)
@@ -52,7 +56,9 @@
 
 ## Overview
 
-This document defines LangGraph state design patterns for a McDonald's breakfast drive-thru voice ordering system. The system uses Pydantic v2 models (`Item`, `Modifier`, `Order`, `Menu`) as structured inputs/outputs between workflow nodes and LLM calls.
+This document defines LangGraph state design patterns for a McDonald's breakfast drive-thru ordering system. In v0, customers interact via a **chatbot interface** (text-only). The architecture is designed to easily integrate Speech-to-Text (STT) and Text-to-Speech (TTS) in future versions without modifying the core graph logic.
+
+The system uses Pydantic v2 models (`Item`, `Modifier`, `Order`, `Menu`) as structured inputs/outputs between workflow nodes and LLM calls.
 
 ---
 
@@ -66,9 +72,10 @@ This document defines LangGraph state design patterns for a McDonald's breakfast
 
 3. **Order Loop**: Iteratively collect items until the customer signals completion:
    - Parse customer utterance into structured `Item` request
-   - Validate against menu (strict + fuzzy matching on `Item.name`)
-   - Handle success: add to `Order.items`, confirm to customer
-   - Handle failure: inform customer item unavailable, prompt for alternatives
+   - Validate against menu (strict matching on `Item.name`)
+   - Handle success: add to `Order.items`, confirm item to customer
+   - Handle failure: politely inform customer item not on the menu, prompt for alternatives
+   - Ask if customer wants to order anything anything else, if so, continue loop. if not, exit loop as order is complete
 
 4. **Order Confirmation**: Read back complete order (`Item.name`, `Item.quantity` for each item), thank customer.
 
@@ -76,7 +83,7 @@ This document defines LangGraph state design patterns for a McDonald's breakfast
 
 | Check | Pass Condition | Fail Condition |
 |-------|---------------|----------------|
-| Item exists | `Item.name` matches (exact or fuzzy) menu item | No match found |
+| Item exists | `Item.name` matches  menu item | No match found |
 | Quantity valid | `Item.quantity >= 1` | `quantity < 1` or invalid |
 | Modifiers valid | All `Item.modifiers` exist in `Item.available_modifiers` | Unknown modifier requested |
 
@@ -85,7 +92,6 @@ This document defines LangGraph state design patterns for a McDonald's breakfast
 - Customer orders item not on menu (polite decline, suggest alternatives)
 - Customer requests invalid quantity
 - Customer requests unavailable modifier
-- Customer changes mind mid-order (remove item)
 - Customer wants to hear order so far
 - Customer says "that's all" / "done" / "nothing else"
 
@@ -133,8 +139,6 @@ from pydantic import BaseModel, Field
 
 class CustomerIntent(StrEnum):
     ADD_ITEM = "add_item"
-    REMOVE_ITEM = "remove_item"
-    MODIFY_ITEM = "modify_item"
     READ_ORDER = "read_order"
     DONE = "done"
     UNCLEAR = "unclear"
@@ -188,17 +192,6 @@ class ParsedItemRequest(BaseModel):
         description="The original customer utterance for debugging"
     )
 
-
-class ParsedRemovalRequest(BaseModel):
-    """LLM output for item removal requests."""
-
-    item_name: str = Field(
-        description="The item to remove from the order"
-    )
-    remove_all: bool = Field(
-        default=True,
-        description="Whether to remove all instances or just one"
-    )
 ```
 
 ### Validation Result
@@ -225,11 +218,11 @@ class ValidationResult(BaseModel):
     )
     match_type: str | None = Field(
         default=None,
-        description="'exact', 'fuzzy', or None if no match"
+        description="'exact' or None if no match"
     )
     match_score: float | None = Field(
         default=None, ge=0.0, le=1.0,
-        description="Fuzzy match confidence score"
+        description="Exact match confidence score"
     )
     failure_reason: str | None = Field(
         default=None,
@@ -283,11 +276,7 @@ class ParseResult(BaseModel):
     intent: ParsedIntent
     item_request: ParsedItemRequest | None = Field(
         default=None,
-        description="Populated when intent is add_item or modify_item"
-    )
-    removal_request: ParsedRemovalRequest | None = Field(
-        default=None,
-        description="Populated when intent is remove_item"
+        description="Populated when intent is add_item"
     )
 ```
 
@@ -378,8 +367,6 @@ def route_by_intent(state: DriveThruState) -> str:
 
     routing_map = {
         CustomerIntent.ADD_ITEM: "parse_item",
-        CustomerIntent.REMOVE_ITEM: "remove_item",
-        CustomerIntent.MODIFY_ITEM: "modify_item",
         CustomerIntent.READ_ORDER: "read_order",
         CustomerIntent.DONE: "confirm_order",
         CustomerIntent.UNCLEAR: "clarify",
@@ -396,13 +383,11 @@ builder.add_conditional_edges(
     route_by_intent,
     {
         "parse_item": "parse_item",
-        "remove_item": "remove_item",
         "read_order": "read_order",
         "confirm_order": "confirm_order",
         "clarify": "clarify",
         "greet": "greet",
         "answer_question": "answer_question",
-        "modify_item": "modify_item",
     }
 )
 ```
@@ -411,7 +396,9 @@ builder.add_conditional_edges(
 
 ## Graph Architectures
 
-### Approach 1: Simple Linear with Conditional Loop
+### Approach 1: Simple Linear with Conditional Loop (Deprecated)
+
+> **⚠️ DEPRECATED:** This approach will not be used. See [Approach 2](#approach-2-explicit-state-machine-v0-implementation) for the v0 implementation.
 
 A minimal graph with a single order-handling node that loops until completion.
 
@@ -431,10 +418,13 @@ START --> Load Menu --> Greet Customer --> Take Order Node --> Order Complete?
 **Cons:**
 - All logic bundled in one node (harder to test individually)
 - Less flexibility for adding features
+- **Not used—too limited for production requirements**
 
 ---
 
-### Approach 2: Explicit State Machine (Recommended)
+### Approach 2: Explicit State Machine (v0 Implementation)
+
+> **✅ v0 IMPLEMENTATION:** This is the architecture used for v0.
 
 Breaks the workflow into discrete, testable nodes with explicit transitions.
 
@@ -444,29 +434,29 @@ START --> Load Menu --> Greet --> Await Input --> Parse Intent
                                       |          [Intent Type]
                                       |                |
                     +-----------------+----------------+------------------+
-                    |                 |                |                  |
-               add_item          remove_item      read_order            done
-                    |                 |                |                  |
-                Validate          Remove from      Read Current     Confirm Final
-                    |               Order             Order             Order
-               [Valid?]              |                |                  |
-                    |                |                |                  v
-           +-------+--------+       |                |                Thank
-           |                |       |                |                  |
-          Yes              No       |                |                  v
-           |                |       |                |                 END
-        Add Item        Reject      |                |
-           |                |       |                |
-    Success Response   Await Input  |                |
-           |                        |                |
-           +------------------------+----------------+
+                    |                                  |                  |
+               add_item                           read_order            done
+                    |                                  |                  |
+                Validate                          Read Current     Confirm Final
+                    |                                 Order             Order
+               [Valid?]                               |                  |
+                    |                                 |                  v
+           +-------+--------+                         |                Thank
+           |                |                         |                  |
+          Yes              No                         |                  v
+           |                |                         |                 END
+        Add Item        Reject                        |
+           |                |                         |
+    Success Response   Await Input                    |
+           |                                          |
+           +------------------------------------------+
 ```
 
 **Pros:**
 - Each node has single responsibility (easy to test)
-- Supports multiple intents (add, remove, read back, done)
+- Supports multiple intents (add, read back, done)
 - Clear routing logic via conditional edges
-- Extensible (add new intents without restructuring)
+- Extensible (can add remove/modify intents in future versions)
 - Deterministic behavior (important for fast food ordering)
 
 **Cons:**
@@ -475,7 +465,9 @@ START --> Load Menu --> Greet --> Await Input --> Parse Intent
 
 ---
 
-### Approach 3: Subgraph Pattern with Validation Subgraph
+### Approach 3: Subgraph Pattern with Validation Subgraph (Future Consideration)
+
+> **📋 FUTURE:** This approach may be considered for future versions if validation complexity increases.
 
 Main graph delegates complex validation to a dedicated subgraph.
 
@@ -513,7 +505,6 @@ Validation Subgraph:
 **Pros:**
 - Encapsulates complex validation logic
 - Subgraph can be tested independently
-- Supports sophisticated fuzzy matching with confirmation
 
 **Cons:**
 - Most complex to implement
@@ -523,22 +514,26 @@ Validation Subgraph:
 
 ## Tradeoff Summary
 
-| Approach | Complexity | Testability | Flexibility | Determinism | Best For |
-|----------|------------|-------------|-------------|-------------|----------|
-| **Simple Linear** | Low | Medium | Low | High | MVP, prototyping |
-| **Explicit State Machine** | Medium | High | Medium | High | Production with clear requirements |
-| **Subgraph Pattern** | High | High | High | Medium | Complex validation, large teams |
+| Approach | Complexity | Testability | Flexibility | Determinism | Status |
+|----------|------------|-------------|-------------|-------------|--------|
+| **Simple Linear** | Low | Medium | Low | High | ⚠️ Deprecated |
+| **Explicit State Machine** | Medium | High | Medium | High | ✅ **v0 Implementation** |
+| **Subgraph Pattern** | High | High | High | Medium | 📋 Future consideration |
 
 ---
 
-## Recommended Approach
+## v0 Implementation Decision
 
-For a McDonald's drive-thru bot, **Explicit State Machine** is recommended:
+**Approach 2 (Explicit State Machine)** is the architecture for v0:
 
 1. **Determinism matters**: Fast food ordering should be predictable
-2. **Clear intents**: Add, remove, read back, done are well-defined
+2. **Clear intents**: Add, read back, done are well-defined (v0 scope)
 3. **Testability**: Each node can be unit tested
-4. **Extensibility**: Can add modifiers, combos, upselling later
+4. **Extensibility**: Can add remove, modify, combos, upselling later
+
+**Why not Approach 1?** Too limited—bundling all logic in one node makes testing difficult and doesn't support the clear separation of concerns needed for production.
+
+**Why not Approach 3 (yet)?** The subgraph pattern adds complexity that isn't justified for v0's straightforward validation requirements. May be reconsidered if validation logic grows more complex in future versions.
 
 ---
 
@@ -583,10 +578,10 @@ Use LangGraph's `InMemorySaver` or `SqliteSaver` for checkpointing:
 
 ### Streaming
 
-Enable streaming for real-time voice synthesis:
+Enable streaming for real-time responses (v0: chatbot, future: voice synthesis):
 ```python
 async for event in graph.astream(input, config):
-    # Stream response chunks for TTS
+    # Stream response chunks (text for v0, TTS for future)
 ```
 
 ### Error Recovery
@@ -595,11 +590,18 @@ async for event in graph.astream(input, config):
 - Use `Command(goto="await_input")` for graceful recovery
 - Log failures for menu improvement insights
 
-### Voice Integration Points
+### Interface Integration Points
 
-- **Input**: ASR output --> `await_input` node
-- **Output**: Node responses --> TTS system
-- Consider latency requirements (sub-second response)
+**v0 (Chatbot - Text Only):**
+- **Input**: User text message --> `await_input` node
+- **Output**: Node responses --> Chat display
+
+**Future (Voice with STT/TTS):**
+- **Input**: ASR (Speech-to-Text) output --> `await_input` node
+- **Output**: Node responses --> TTS (Text-to-Speech) system
+- Consider latency requirements (sub-second response for voice)
+
+> **Design Note:** The graph architecture is interface-agnostic. The same nodes and state machine work for both text and voice—only the input/output adapters change. This allows easy migration from chatbot to voice interface without modifying core logic.
 
 ---
 
@@ -866,10 +868,15 @@ atexit.register(langfuse.flush)
 
 ## Next Steps
 
+### v0 (Chatbot Interface)
 1. Define exact node signatures and state schema
-2. Implement menu matching (exact + fuzzy with `rapidfuzz`)
+2. Implement exact menu matching
 3. Build and test individual nodes
 4. Wire up graph with conditional edges
 5. Add persistence and streaming
-6. Integrate with voice pipeline (ASR/TTS)
+6. Build chatbot interface (text input/output)
 7. **Set up Langfuse project and integrate observability**
+
+### Future Versions
+8. Integrate with voice pipeline (ASR/TTS)
+9. Add remove/modify item functionality

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://mcdonalds.com/menu/breakfast/v2"
+           xmlns:tns="http://mcdonalds.com/menu/breakfast/v2"
+           elementFormDefault="qualified">
+
+  <xs:annotation>
+    <xs:documentation>
+      McDonald's Breakfast Menu Schema v2
+      Schema for McDonald's breakfast menu data
+    </xs:documentation>
+  </xs:annotation>
+
+  <!-- Root Element -->
+  <xs:element name="menu" type="tns:MenuType"/>
+
+  <!-- Menu Type (root) -->
+  <xs:complexType name="MenuType">
+    <xs:sequence>
+      <xs:element name="metadata" type="tns:MetadataType"/>
+      <xs:element name="items" type="tns:ItemsType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Metadata Type -->
+  <xs:complexType name="MetadataType">
+    <xs:annotation>
+      <xs:documentation>Menu metadata including identification and location</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="menu_id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Unique identifier for the menu</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="menu_name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Human-readable name of the menu</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="menu_version" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Version identifier for the menu</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="location" type="tns:LocationType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Location Type -->
+  <xs:complexType name="LocationType">
+    <xs:annotation>
+      <xs:documentation>Location information for this menu</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Unique identifier for the location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Name of the location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="address" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Street address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="city" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>City name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="state" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>State or province code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="zip" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Postal/ZIP code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="country" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Country code or name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Items Container Type -->
+  <xs:complexType name="ItemsType">
+    <xs:annotation>
+      <xs:documentation>List of menu items</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="item" type="tns:ItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Item Type -->
+  <xs:complexType name="ItemType">
+    <xs:sequence>
+      <xs:element name="item_id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Unique identifier for the item</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Display name of the item</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="category_name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Category this item belongs to</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="size" type="tns:SizeType">
+        <xs:annotation>
+          <xs:documentation>Size of the item</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="default_size" type="tns:SizeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Default size when ordering this item</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="quantity" type="xs:positiveInteger">
+        <xs:annotation>
+          <xs:documentation>Default quantity (minimum 1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="modifiers" type="tns:ModifiersType">
+        <xs:annotation>
+          <xs:documentation>Currently applied modifiers</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="available_modifiers" type="tns:ModifiersType">
+        <xs:annotation>
+          <xs:documentation>Modifiers that can be applied to this item</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Size Enumeration Type -->
+  <xs:simpleType name="SizeType">
+    <xs:annotation>
+      <xs:documentation>Valid size values for menu items</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="regular"/>
+      <xs:enumeration value="large"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Modifiers Container Type -->
+  <xs:complexType name="ModifiersType">
+    <xs:sequence>
+      <xs:element name="modifier" type="tns:ModifierType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Modifier Type -->
+  <xs:complexType name="ModifierType">
+    <xs:annotation>
+      <xs:documentation>A modifier that can be applied to an item</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="modifier_id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Unique identifier for the modifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Display name of the modifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
