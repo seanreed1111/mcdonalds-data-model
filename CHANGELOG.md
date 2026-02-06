@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Fix Langfuse tracing not appearing in dashboard by migrating to SDK v3 singleton pattern (#5)
+
 ### Added
 - Add v0-stage-1 simple chatbot with LangGraph, Mistral AI, and Langfuse observability (#5)
 - Add streaming CLI chat interface with session/user ID tracing (#5)
