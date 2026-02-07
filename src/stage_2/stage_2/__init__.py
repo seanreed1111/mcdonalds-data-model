@@ -1,1 +1,1 @@
-# Stage 2 placeholder package
+"""v0-stage-1: Simple chatbot with Langfuse observability."""

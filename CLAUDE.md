@@ -49,12 +49,16 @@ uv run --package stage-3 python                   # Python REPL with stage_3 ava
 cd src/stage_1 && uv add <package>  # Add to stage_1
 cd src/stage_3 && uv add <package>  # Add to stage_3
 
-# Useful commands
-make chat          # Run stage_1 chatbot CLI
-make dev           # Run LangGraph Studio
-make test-smoke    # Verify imports and graph compilation
-make typecheck     # Run ty type checker
-date -Iseconds     # Get current date
+# Make targets (use SCOPE variable for stage selection)
+make chat                # Run stage_1 chatbot CLI (default SCOPE=1)
+make chat SCOPE=2        # Run stage_2 chatbot CLI
+make dev                 # Run LangGraph Studio for stage_1 (default SCOPE=1)
+make dev SCOPE=2         # Run LangGraph Studio for stage_2
+make setup               # Install all packages (default SCOPE=all)
+make setup SCOPE=1       # Install stage_1 only
+make test                # Run smoke tests
+make typecheck           # Run ty type checker
+date -Iseconds           # Get current date
 ```
 
 ## Important: Package Management

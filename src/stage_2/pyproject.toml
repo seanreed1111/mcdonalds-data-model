@@ -1,9 +1,16 @@
 [project]
 name = "stage-2"
 version = "0.1.0"
-description = "Stage 2: TBD"
+description = "Stage 2: Talking chatbots with LangGraph + Mistral + Langfuse"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-mistralai>=1.1.1",
+    "langfuse>=3.12.1",
+    "langgraph>=1.0.7",
+    "pydantic-settings>=2.12.0",
+]
 
 [build-system]
 requires = ["hatchling"]
