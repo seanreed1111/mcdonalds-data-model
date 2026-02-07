@@ -10,20 +10,51 @@ Pydantic v2 data models for a McDonald's breakfast menu drive-thru voice orderin
 
 ## Project Structure
 
+This is a uv workspace project with multiple independent stages:
+
 ```
-src/models.py      # Pydantic models (Item, Modifier, Order, Menu)
-src/enums.py       # Enums (Size, CategoryName)
-menus/             # Menu data (raw CSV, transformed JSON)
-thoughts/          # Design notes and requirements
+src/
+├── stage_1/               # Simple LangGraph chatbot
+│   ├── pyproject.toml     # stage_1's own dependencies
+│   └── stage_1/           # Python package
+│       ├── config.py
+│       ├── graph.py
+│       └── main.py
+├── stage_2/               # TBD (skeleton)
+│   ├── pyproject.toml
+│   └── stage_2/
+├── stage_3/               # Data models
+│   ├── pyproject.toml
+│   └── stage_3/
+│       ├── enums.py       # Enums (Size, CategoryName)
+│       └── models.py      # Pydantic models (Item, Modifier, Order, Menu)
+menus/                     # Menu data (raw CSV, transformed JSON)
+thoughts/                  # Design notes and requirements
 ```
 
 ## Commands
 
+This is a uv workspace with multiple packages. Each stage has its own dependencies.
+
 ```bash
-uv sync            # Install dependencies
-uv run python      # Run Python with project dependencies
-uv add <package>   # Add new dependencies (always use this instead of editing pyproject.toml)
-date -Iseconds     # Get current date (use this to verify the actual date)
+# Workspace commands
+uv sync --all-packages              # Install all stages' dependencies
+uv sync --package stage-1           # Install only stage_1's dependencies
+
+# Running stage-specific commands
+uv run --package stage-1 python -m stage_1.main   # Run stage_1 chatbot
+uv run --package stage-3 python                   # Python REPL with stage_3 available
+
+# Adding dependencies to a specific stage
+cd src/stage_1 && uv add <package>  # Add to stage_1
+cd src/stage_3 && uv add <package>  # Add to stage_3
+
+# Useful commands
+make chat          # Run stage_1 chatbot CLI
+make dev           # Run LangGraph Studio
+make test-smoke    # Verify imports and graph compilation
+make typecheck     # Run ty type checker
+date -Iseconds     # Get current date
 ```
 
 ## Important: Package Management

@@ -5,7 +5,7 @@ import uuid
 
 from pydantic import BaseModel, Field, model_validator
 
-from enums import Size, CategoryName
+from .enums import Size, CategoryName
 
 
 class Modifier(BaseModel):

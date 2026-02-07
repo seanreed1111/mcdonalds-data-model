@@ -1,7 +1,7 @@
 {
-  "dependencies": ["."],
+  "dependencies": ["./src/stage_1"],
   "graphs": {
-    "chatbot": "./src/stage_1/graph.py:graph"
+    "chatbot": "./src/stage_1/stage_1/graph.py:graph"
   },
   "env": ".env"
 }

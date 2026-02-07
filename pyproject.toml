@@ -1,36 +1,19 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "mcdonalds-data-model"
+name = "mcdonalds-voice-ai"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "McDonald's breakfast menu drive-thru voice ordering system"
 requires-python = ">=3.12"
-dependencies = [
-    "langchain-community>=0.4.1",
-    "langgraph-cli>=0.4.12",
-    "langgraph>=1.0.7",
-    "llama-index>=0.14.13",
-    "pydantic>=2.12.5",
-    "pydantic-settings>=2.12.0",
-    "returns>=0.26.0",
-    "jsonschema>=4.26.0",
-    "langfuse>=3.12.1",
-    "langchain-openai>=1.1.7",
-    "langchain-anthropic>=1.3.1",
-    "pluralizer>=2.0.0",
-    "lxml>=6.0.2",
-    "langgraph-sdk>=0.3.3",
-    "langchain-cohere>=0.5.0",
-    "langchain-mistralai>=1.1.1",
-    "langchain-groq>=1.1.2",
-    "langchain>=1.2.8",
-]
+dependencies = []
+
+# No [build-system] — root is not installable, just a workspace coordinator
+
+[tool.uv.workspace]
+members = ["src/stage_*"]
 
 [dependency-groups]
 dev = [
+    "langgraph-cli>=0.4.12",
+    "langgraph-sdk>=0.3.3",
     "pre-commit>=4.5.1",
     "ruff>=0.14.14",
     "ty>=0.0.15",
@@ -54,13 +37,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.ty.src]
-include = ["src"]
+include = ["src/stage_1", "src/stage_2", "src/stage_3"]
 
 [tool.ty.environment]
 python-version = "3.12"
-
-[tool.setuptools.package-dir]
-"" = "src"
-
-[tool.setuptools.packages.find]
-where = ["src"]

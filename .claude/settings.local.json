@@ -45,7 +45,10 @@
       "Bash(gh pr merge:*)",
       "Bash(git pull:*)",
       "Bash(where:*)",
-      "WebFetch(domain:blog.freidereikhs.dev)"
+      "WebFetch(domain:blog.freidereikhs.dev)",
+      "Bash(test:*)",
+      "WebFetch(domain:hatch.pypa.io)",
+      "WebFetch(domain:tomasrepcik.dev)"
     ]
   }
 }
