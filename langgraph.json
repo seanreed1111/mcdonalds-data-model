@@ -1,7 +1,8 @@
 {
-  "dependencies": ["."],
+  "dependencies": ["./src/stage_1", "./src/stage_2"],
   "graphs": {
-    "chatbot": "./src/stage_1/graph.py:graph"
+    "chatbot_simple": "./src/stage_1/stage_1/graph.py:graph",
+    "talking_chatbots": "./src/stage_2/stage_2/graph.py:graph"
   },
   "env": ".env"
 }
